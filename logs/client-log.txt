@@ -1,0 +1,2 @@
+INFO:root:Endereço do servidor: https://localhost:4443
+INFO:root:Resposta do servidor: Servidor seguro diz: Olá cliente!
