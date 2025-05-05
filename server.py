@@ -31,9 +31,20 @@ def register_service():
             "Timeout": "5s"
         }
     }
-    requests.put(url, data=json.dumps(payload))
-    logging.info("Service registered with Consul.")
-    print("Service registered with Consul.")
+    try:
+        response = requests.put(url, data=json.dumps(payload))
+        response.raise_for_status()  # Levanta uma exceção para códigos de status HTTP de erro
+        logging.info("Service registered with Consul.")
+        print("Service registered with Consul.")
+    except requests.exceptions.ConnectionError as e:
+        logging.error(f"Erro de conexão ao registrar o serviço no Consul: {e}")
+        print(f"Erro de conexão ao registrar o serviço no Consul: {e}")
+    except requests.exceptions.HTTPError as e:
+        logging.error(f"Erro HTTP ao registrar o serviço no Consul: {e}")
+        print(f"Erro HTTP ao registrar o serviço no Consul: {e}")
+    except Exception as e:
+        logging.error(f"Erro inesperado ao registrar o serviço no Consul: {e}")
+        print(f"Erro inesperado ao registrar o serviço no Consul: {e}")
 
 class SecureServer(BaseHTTPRequestHandler):
     def do_GET(self):

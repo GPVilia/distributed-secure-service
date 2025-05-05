@@ -1,107 +1,123 @@
 
 # Mini Sistema Distribuído com Descoberta de Serviço e Comunicação Segura
 
-## Descrição
-**Trabalho de faculdade** que implementa um sistema distribuído com **comunicação segura via SSL/TLS** e **autenticação básica**. O serviço é registrado no **Consul**, permitindo que o cliente localize dinamicamente o servidor e se conecte de forma segura.
+## Descrição da Atividade
 
-### Arquitetura
-- **Servidor**: Um servidor HTTP simples protegido por SSL/TLS com autenticação básica.
-- **Cliente**: Um cliente que consulta o Consul para descobrir o endereço do servidor e fazer uma requisição HTTPS autenticada.
-- **Consul**: Usado para registrar o serviço e permitir que o cliente o localize dinamicamente.
+Este projeto consiste na implementação de um **sistema distribuído simples** com descoberta de serviço e comunicação segura. O sistema é composto por dois serviços principais:
+
+- **Cliente**: O cliente descobre dinamicamente o endereço do servidor via **Consul**.
+- **Servidor**: O servidor exige autenticação básica (utilizando **utilizador** e **senha**) e protege a comunicação utilizando **SSL/TLS** (certificados autoassinados).
+
+A comunicação entre cliente e servidor é feita via **HTTPS**, garantindo segurança. A descoberta do serviço é feita por meio de um **registro de serviço** no **Consul**.
 
 ## Tecnologias Usadas
-- **Python**: Linguagem utilizada para implementar o servidor e cliente.
-- **Consul**: Para registrar e descobrir serviços dinamicamente.
-- **SSL/TLS (Self-signed Certificate)**: Para proteger a comunicação entre cliente e servidor.
-- **Requests (Python Library)**: Para fazer requisições HTTP de maneira simples no cliente.
 
-## Estrutura do Projeto
-```
-/projeto-consul
-│
-├── certs/
-│   ├── cert.pem
-│   └── key.pem
-├── servidor.py
-├── cliente.py
-├── logs/
-│   ├── server-log.txt
-│   └── client-log.txt
-├── Dockerfile
-└── README.md
-```
+- **Linguagem**: Python
+- **Bibliotecas**: 
+  - `http.server` para o servidor
+  - `requests` para a interação com o Consul
+  - `ssl` para a proteção via SSL/TLS
+- **Consul**: Utilizado para a descoberta do serviço.
+- **Certificados SSL**: Autoassinados, criados para garantir a comunicação segura entre cliente e servidor.
+- **Docker**: Para execução do Consul (opcional).
 
 ## Como Executar o Sistema
 
-### 1. Instalar dependências
-Certifique-se de ter as bibliotecas necessárias instaladas:
+### 1. **Instalar o Docker**:
+
+Se não tiver o **Docker** instalado, siga as instruções do [site oficial](https://docs.docker.com/get-docker/) para instalar o Docker na sua máquina.
+
+### 2. **Gerar os Certificados SSL**:
+
+Para garantir a comunicação segura via **HTTPS**, será necessário gerar os certificados **SSL**. Para isso, execute o seguinte comando no seu terminal (com **OpenSSL** instalado):
 
 ```bash
-pip install requests
+openssl req -x509 -newkey rsa:4096 -keyout certs/key.pem -out certs/cert.pem -days 365 -nodes
 ```
 
-### 2. Gerar Certificados SSL (Windows)
-Se você estiver no **Windows**, siga os passos abaixo para gerar os certificados necessários para comunicação segura:
+Este comando cria dois ficheiros **PEM** (`key.pem` e `cert.pem`) que serão usados para proteger a comunicação entre o cliente e o servidor. Certifique-se de que o diretório `certs` existe antes de executar este comando.
 
-#### Passos:
-1. **Instalar o OpenSSL**:
-   - Baixe o **OpenSSL** [aqui](https://slproweb.com/products/Win32OpenSSL.html) e instale o pacote adequado para o seu sistema (versão 32 ou 64 bits).
-   - Adicione o **OpenSSL** ao seu **path de ambiente** do sistema.
+### 3. **Rodar o Consul**:
 
-2. **Gerar os Certificados**:
-   Abra o **Prompt de Comando** no Windows (ou **PowerShell**) e execute o seguinte comando:
+O **Consul** será usado para registar e descobrir os serviços. Para isso, execute o seguinte comando para iniciar o Consul no Docker:
 
-   ```bash
-   openssl req -x509 -newkey rsa:4096 -nodes -keyout certs/key.pem -out certs/cert.pem -days 365 -subj "/CN=localhost"
-   ```
+2 Opções de script:
 
-   Isso criará os arquivos `cert.pem` (certificado) e `key.pem` (chave privada) dentro da pasta `certs/`.
 
-### 3. Rodar o Consul
-Inicie o Consul com o seguinte comando no Docker:
-
+Hashicorp/consul:1.15.4
 ```bash
-docker run -d -p 8500:8500 --name consul consul:1.15.4
+docker run -d --name consul -p 8500:8500 -p 8600:8600 -p 8300:8300 -p 8301:8301 -p 8302:8302 -p 8600:8600/udp hashicorp/consul:1.15.4
 ```
 
-A interface web do Consul estará disponível em [http://localhost:8500](http://localhost:8500).
+Consul (Caso já tenha a imagem 1.15.4 instalada):
+```bash
+docker run -d --name consul -p 8500:8500 -p 8600:8600 -p 8300:8300 -p 8301:8301 -p 8302:8302 -p 8600:8600/udp consul:1.15.4
+```
 
-### 4. Iniciar o Servidor
-No terminal, execute o servidor Python:
+Depois de correr o comando, aceda à interface web do **Consul** em **[http://localhost:8500](http://localhost:8500)**.
+
+### 4. **Rodar o Servidor Seguro**:
+
+Com o Consul em execução, pode iniciar o **servidor** com o seguinte comando:
 
 ```bash
 python servidor.py
 ```
 
-O servidor irá registrar-se no Consul e ficará acessível via HTTPS (com um certificado self-signed) na URL `https://localhost:4443`.
+Este servidor está protegido com **SSL/TLS** e exige autenticação básica para permitir o acesso.
 
-### 5. Iniciar o Cliente
-Em um terminal separado, execute o cliente:
+### 5. **Rodar o Cliente**:
+
+Com o servidor a funcionar, agora pode executar o **cliente** com o seguinte comando:
 
 ```bash
 python cliente.py
 ```
 
-O cliente irá consultar o Consul para localizar o servidor, fazer uma requisição HTTPS com autenticação básica e exibir a resposta do servidor.
+O cliente irá descobrir dinamicamente o endereço do servidor via **Consul** e estabelecer uma comunicação segura.
 
-### 6. Verificando os Logs
-O servidor irá registrar as interações no arquivo `logs/server-log.txt` e o cliente em `logs/client-log.txt`. Você pode verificar os logs para monitorar a comunicação entre o cliente e o servidor.
+### 6. **Verificar os Logs**:
 
-## Logs de Execução
+O servidor mantém um ficheiro de **logs** (`server-log.txt`) onde é registado todo o processo de interação entre o cliente e o servidor. Certifique-se de verificar os logs para garantir que tudo está a funcionar como esperado.
 
-### Servidor:
-O servidor gera logs das interações com os clientes e registra os acessos autenticados no arquivo `server-log.txt`.
+### 7. **Verificar o Serviço no Consul**:
 
-### Cliente:
-O cliente gera logs da resposta do servidor e do processo de descoberta do servidor no Consul em `client-log.txt`.
+Aceda à interface do **Consul** em **[http://localhost:8500](http://localhost:8500)** e confirme que o serviço `my-service` foi registado corretamente. Na página de serviços, o serviço deve aparecer como **ativo**.
 
-## Conclusão
-Este sistema implementa uma comunicação segura entre cliente e servidor utilizando SSL/TLS e autenticação básica. A descoberta dinâmica de serviços é gerida pelo Consul, e os logs das interações são mantidos para auditoria.
+## Estrutura do Projeto
+
+```
+.
+├── certs/
+│   ├── cert.pem        # Certificado SSL
+│   └── key.pem         # Chave privada SSL
+├── logs/
+│   ├── server-logs.txt # Logs do servidor
+│   └── client-logs.txt # Logs do cliente
+├── cliente.py          # Código do cliente
+├── servidor.py         # Código do servidor
+├── Dockerfile          # Ficheiro de configuração do Docker (se necessário)
+└── README.md           # Este ficheiro
+```
+
+## Licença
+
+Este código é parte de um **trabalho de faculdade** e está disponível para fins acadêmicos. Não deverá ser usado para outros fins sem a permissão adequada.
+
+## Possíveis Erros e Soluções
+
+1. **O Consul não está a iniciar**:
+   - Certifique-se de que o **Docker** está a funcionar corretamente.
+   - Verifique as portas que o Consul está a utilizar (8500, 8600, etc.) para garantir que não há conflitos.
+
+2. **O cliente não consegue encontrar o servidor**:
+   - Verifique se o Consul está a funcionar corretamente e se o serviço está registado.
+   - Confirme se o cliente está a tentar aceder ao serviço correto.
+
+3. **Erros ao executar os comandos SSL**:
+   - Certifique-se de que o OpenSSL está instalado corretamente no seu sistema.
+   - Verifique as permissões do diretório onde está a gerar os certificados.
 
 ---
 
-## Melhorias Futuras
-- **Escalabilidade**: Integrar múltiplas instâncias do servidor com Consul para balanceamento de carga.
-- **Melhoria de Autenticação**: Implementação de autenticação baseada em tokens ou OAuth.
-- **Resiliência**: Adicionar verificações de saúde para garantir a disponibilidade contínua do serviço.
-
+⭐ Trabalho desenvolvido por: Gustavo Vília - 202327134 - GSC
