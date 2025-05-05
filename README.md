@@ -21,6 +21,40 @@ A comunicação entre cliente e servidor é feita via **HTTPS**, garantindo segu
 - **Certificados SSL**: Autoassinados, criados para garantir a comunicação segura entre cliente e servidor.
 - **Docker**: Para execução do Consul (opcional).
 
+## Arquitetura do Projeto
+
+O projeto é composto por três componentes principais:
+
+1. **Cliente**:
+   - O cliente descobre dinamicamente o endereço do servidor através do **Consul**.
+   - Ele faz uma **requisição HTTPS** para o servidor, utilizando **SSL/TLS** para proteger a comunicação.
+   - Exige **autenticação básica** (usuário e senha) para garantir segurança na comunicação.
+
+2. **Servidor**:
+   - O servidor está protegido por **SSL/TLS**, garantindo que a comunicação com o cliente seja segura.
+   - Exige **autenticação básica** (usuário e senha) para validar as requisições.
+   - O servidor registra logs de todas as interações e processos.
+
+3. **Consul**:
+   - O Consul é usado para **descoberta dinâmica de serviços**.
+   - O cliente consulta o Consul para obter o endereço do servidor e fazer a requisição HTTPS.
+   - O Consul registra o serviço do servidor para que o cliente possa localizá-lo facilmente.
+
+### Fluxo de Dados:
+
+1. O **cliente** consulta o **Consul** para obter o endereço do **servidor**.
+2. O **servidor** exige autenticação básica antes de responder.
+3. O cliente faz a **requisição HTTPS** ao servidor, que responde com uma mensagem segura.
+4. Toda a comunicação entre cliente e servidor é encriptada com **SSL/TLS**, garantindo segurança na troca de dados.
+
+### Tecnologias Utilizadas:
+
+- **Python**: Linguagem usada para desenvolver o cliente e servidor.
+- **Consul**: Serviço utilizado para descoberta de serviços.
+- **SSL/TLS**: Usado para garantir a segurança da comunicação.
+- **Docker**: Para executar o Consul localmente.
+
+
 ## Como Executar o Sistema
 
 ### 1. **Instalar o Docker**:
