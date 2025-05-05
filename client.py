@@ -7,16 +7,20 @@ import json
 # Desativar warnings de certificado self-signed
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Configurações
-CONSUL_URL = "http://localhost:8500/v1/catalog/service/my-service"
-USERNAME = 'admin'
-PASSWORD = 'admin'
+# Configurações do cliente
+CONSUL_URL = "http://localhost:8500/v1/catalog/service/my-service"  # URL para buscar o serviço no Consul
+USERNAME = 'admin'  # Nome de usuário para autenticação básica
+PASSWORD = 'admin'  # Senha para autenticação básica
 
-# Config de logging
+# Configuração de logs
 logging.basicConfig(filename='logs/client-log.txt', level=logging.INFO)
 
-# Obter endereço do serviço via Consul
+# Função para obter o endereço do servidor via Consul
 def find_server():
+    """
+    Consulta o Consul para obter o endereço do serviço registrado.
+    Retorna o endereço completo (URL) do servidor ou None se o serviço não for encontrado.
+    """
     try:
         resposta = requests.get(CONSUL_URL)
         dados = resposta.json()
@@ -30,8 +34,12 @@ def find_server():
         print("Erro ao contactar o Consul:", e)
         return None
     
-# Contactar o servidor com autenticação básica
+# Função para contactar o servidor com autenticação básica
 def contact_server(url):
+    """
+    Envia uma requisição GET ao servidor usando autenticação básica.
+    Exibe e registra a resposta do servidor.
+    """
     try:
         resposta = requests.get(url, auth=HTTPBasicAuth(USERNAME, PASSWORD), verify=False)
         if resposta.status_code == 200:
