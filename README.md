@@ -85,7 +85,7 @@ docker run -d --name consul -p 8500:8500 -p 8600:8600 -p 8300:8300 -p 8301:8301 
 
 Consul (Caso já tenha a imagem 1.15.4 instalada):
 ```bash
-docker run -d --name consul -p 8500:8500 -p 8600:8600 -p 8300:8300 -p 8301:8301 -p 8302:8302 -p 8600:8600/udp consul:1.15.4
+docker run -d --name consul -p 8500:8500 -p 8600:8600 -p 8300:8300 -p 8301:8301 -p 8302:8302 -p 8600:8600/udp consul:1.15.4 agent -dev -client 0.0.0.0
 ```
 
 Depois de correr o comando, aceda à interface web do **Consul** em **[http://localhost:8500](http://localhost:8500)**.
