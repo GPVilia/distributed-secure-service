@@ -8,7 +8,7 @@ import json
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Configurações do cliente
-CONSUL_URL = "http://localhost:8500/v1/catalog/service/my-service"  # URL para buscar o serviço no Consul
+CONSUL_URL = "http://localhost:8500/v1/catalog/service/secure-server"  # URL para buscar o serviço no Consul
 USERNAME = 'admin'  # Nome de usuário para autenticação básica
 PASSWORD = 'admin'  # Senha para autenticação básica
 
@@ -23,15 +23,17 @@ def find_server():
     """
     try:
         resposta = requests.get(CONSUL_URL)
+        resposta.raise_for_status()
         dados = resposta.json()
         if not dados:
             print("Serviço não encontrado no Consul.")
             return None
-        ip = dados[0]["ServiceAddress"] or dados[0]["Address"]
+        ip = dados[0].get("ServiceAddress") or dados[0].get("Address")
         porta = dados[0]["ServicePort"]
         return f"https://{ip}:{porta}"
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         print("Erro ao contactar o Consul:", e)
+        logging.error(f"Erro ao contactar o Consul: {e}")
         return None
     
 # Função para contactar o servidor com autenticação básica

@@ -22,19 +22,22 @@ def register_service():
     """
     url = "http://localhost:8500/v1/agent/service/register"
     payload = {
-        "Name": "my-service",  # Nome do serviço
-        "ID": "my-service-1",  # ID único do serviço
-        "Address": "localhost",  # Endereço do serviço
+        "Name": "secure-server",  # Nome do serviço
+        "ID": "secure-server-service",  # ID único do serviço
+        "Address": "127.0.0.1",  # Endereço do serviço
         "Port": PORT,  # Porta do serviço
-        "Check": {  # Configuração de health check
-            "HTTP": f"https://localhost:{PORT}/health",  # URL para verificação de saúde
-            "Method": "GET",  # Método HTTP usado para o health check
+        "Check": {
+            "HTTP": f"https://host.docker.internal:{PORT}/health",  # Use host.docker.internal
+            "Method": "GET",
             "TLSSkipVerify": True,  # Ignorar verificação de certificado TLS
-            "Interval": "10s",  # Intervalo entre verificações
-            "Timeout": "5s"  # Tempo limite para a verificação
+            "Interval": "10s",
+            "Timeout": "5s"
         }
     }
     try:
+        # Valida o payload antes de enviar
+        print("Payload enviado para o Consul:", json.dumps(payload, indent=4))
+        
         # Envia o registro para o Consul
         response = requests.put(url, data=json.dumps(payload))
         response.raise_for_status()  # Levanta exceção para erros HTTP
@@ -59,6 +62,13 @@ class SecureServer(BaseHTTPRequestHandler):
         """
         Lida com requisições GET. Verifica a autenticação e responde com uma mensagem.
         """
+        if self.path == "/health":
+            # Responde com status 200 para o health check
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"OK")
+            return
+
         auth_header = self.headers.get('Authorization')
         if auth_header is None or not self.authenticated(auth_header):
             self.send_401()
@@ -107,4 +117,3 @@ if __name__ == "__main__":
     
     # Inicia o servidor
     httpd.serve_forever()
-

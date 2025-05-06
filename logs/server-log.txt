@@ -3,3 +3,21 @@ INFO:root:Service registered with Consul.
 INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
 INFO:root:Acesso autorizado de ('127.0.0.1', 54657)
 INFO:root:Resposta enviada para ('127.0.0.1', 54657)
+INFO:root:Service registered with Consul.
+INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
+ERROR:root:Erro HTTP ao registrar o serviço no Consul: 400 Client Error: Bad Request for url: http://localhost:8500/v1/agent/service/register
+INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
+INFO:root:Service registered with Consul.
+INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
+ERROR:root:Erro HTTP ao registrar o serviço no Consul: 400 Client Error: Bad Request for url: http://localhost:8500/v1/agent/service/register
+INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
+INFO:root:Service registered with Consul.
+INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
+INFO:root:Service registered with Consul.
+INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
+INFO:root:Service registered with Consul.
+INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
+INFO:root:Service registered with Consul.
+INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
+INFO:root:Service registered with Consul.
+INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
