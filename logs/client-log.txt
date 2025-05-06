@@ -1,2 +1,4 @@
 INFO:root:Endereço do servidor: https://localhost:4443
 INFO:root:Resposta do servidor: Servidor seguro diz: Olá cliente!
+INFO:root:Endereço do servidor: https://127.0.0.1:4443
+INFO:root:Resposta do servidor: Servidor seguro diz: Olá cliente!
