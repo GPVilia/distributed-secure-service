@@ -12,7 +12,7 @@ USERNAME = 'admin'  # Nome de utilizador para autenticação básica
 PASSWORD = 'admin'  # Senha para autenticação básica
 
 # Configuração de logs
-logging.basicConfig(filename='logs/server-log.txt', level=logging.INFO)
+logging.basicConfig(filename='logs/server-log.txt', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Função para registrar o serviço no Consul
 def register_service():
@@ -36,22 +36,19 @@ def register_service():
     }
     try:
         # Valida o payload antes de enviar
-        print("Payload enviado para o Consul:", json.dumps(payload, indent=4))
+        logging.info("Payload enviado para o Consul: %s", json.dumps(payload, indent=4))
         
         # Envia o registro para o Consul
         response = requests.put(url, data=json.dumps(payload))
         response.raise_for_status()  # Levanta exceção para erros HTTP
-        logging.info("Service registered with Consul.")
+        logging.info("Resposta do Consul: %s", response.text)
         print("Service registered with Consul.")
     except requests.exceptions.ConnectionError as e:
-        logging.error(f"Erro de conexão ao registrar o serviço no Consul: {e}")
-        print(f"Erro de conexão ao registrar o serviço no Consul: {e}")
+        logging.error("Erro de conexão ao registrar o serviço no Consul: %s", e)
     except requests.exceptions.HTTPError as e:
-        logging.error(f"Erro HTTP ao registrar o serviço no Consul: {e}")
-        print(f"Erro HTTP ao registrar o serviço no Consul: {e}")
+        logging.error("Erro HTTP ao registrar o serviço no Consul: %s", e)
     except Exception as e:
-        logging.error(f"Erro inesperado ao registrar o serviço no Consul: {e}")
-        print(f"Erro inesperado ao registrar o serviço no Consul: {e}")
+        logging.error("Erro inesperado ao registrar o serviço no Consul: %s", e)
 
 # Classe que define o comportamento do servidor seguro
 class SecureServer(BaseHTTPRequestHandler):
@@ -62,34 +59,40 @@ class SecureServer(BaseHTTPRequestHandler):
         """
         Lida com requisições GET. Verifica a autenticação e responde com uma mensagem.
         """
+        logging.info("Requisição recebida: %s", self.path)
         if self.path == "/health":
             # Responde com status 200 para o health check
             self.send_response(200)
             self.end_headers()
             self.wfile.write(b"OK")
+            logging.info("Health check respondido com sucesso.")
             return
 
         auth_header = self.headers.get('Authorization')
         if auth_header is None or not self.authenticated(auth_header):
+            logging.warning("Autenticação falhou para o cliente: %s", self.client_address)
             self.send_401()
             self.wfile.write(b'Unauthorized')
             return
         
-        logging.info(f"Acesso autorizado de {self.client_address}")
+        logging.info("Acesso autorizado de %s", self.client_address)
         self.send_response(200)
         self.end_headers()
         self.wfile.write("Servidor seguro diz: Olá cliente!".encode("utf-8"))
-        logging.info(f"Resposta enviada para {self.client_address}")
-        print(f"Resposta enviada para {self.client_address}")
+        logging.info("Resposta enviada para %s", self.client_address)
 
     def authenticated(self, auth_header):
         """
         Verifica se o cabeçalho de autenticação contém credenciais válidas.
         """
-        metodo, credenciais = auth_header.split(" ", 1)
-        cred_decodificadas = base64.b64decode(credenciais).decode("utf-8")
-        user, pwd = cred_decodificadas.split(":", 1)
-        return user == USERNAME and pwd == PASSWORD
+        try:
+            metodo, credenciais = auth_header.split(" ", 1)
+            cred_decodificadas = base64.b64decode(credenciais).decode("utf-8")
+            user, pwd = cred_decodificadas.split(":", 1)
+            return user == USERNAME and pwd == PASSWORD
+        except Exception as e:
+            logging.error("Erro ao processar autenticação: %s", e)
+            return False
 
     def send_401(self):
         """
@@ -98,7 +101,7 @@ class SecureServer(BaseHTTPRequestHandler):
         self.send_response(401)
         self.send_header('WWW-Authenticate', 'Basic realm=\"Acesso Restrito\"')
         self.end_headers()
-        self.wfile.write(b"Autenticacao necessaria.")
+        logging.info("Resposta 401 enviada para o cliente.")
 
 if __name__ == "__main__":
     # Registra o serviço no Consul
@@ -112,8 +115,8 @@ if __name__ == "__main__":
     httpd = HTTPServer((HOST, PORT), SecureServer)
     httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
     
+    logging.info("Servidor seguro iniciado em https://%s:%s", HOST, PORT)
     print(f"Servidor seguro iniciado em https://{HOST}:{PORT}")
-    logging.info(f"Servidor seguro iniciado em https://{HOST}:{PORT}")
     
     # Inicia o servidor
     httpd.serve_forever()

@@ -23,3 +23,39 @@ INFO:root:Service registered with Consul.
 INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
 INFO:root:Acesso autorizado de ('127.0.0.1', 57426)
 INFO:root:Resposta enviada para ('127.0.0.1', 57426)
+INFO:root:Service registered with Consul.
+INFO:root:Servidor seguro iniciado em https://0.0.0.0:4443
+INFO:root:Acesso autorizado de ('127.0.0.1', 54579)
+INFO:root:Resposta enviada para ('127.0.0.1', 54579)
+2025-05-07 22:12:26,067 - INFO - Payload enviado para o Consul: {
+    "Name": "secure-server",
+    "ID": "secure-server-service",
+    "Address": "127.0.0.1",
+    "Port": 4443,
+    "Check": {
+        "HTTP": "https://host.docker.internal:4443/health",
+        "Method": "GET",
+        "TLSSkipVerify": true,
+        "Interval": "10s",
+        "Timeout": "5s"
+    }
+}
+2025-05-07 22:12:26,085 - INFO - Resposta do Consul: 
+2025-05-07 22:12:26,091 - INFO - Servidor seguro iniciado em https://0.0.0.0:4443
+2025-05-07 22:12:31,598 - INFO - Requisição recebida: /health
+2025-05-07 22:12:31,598 - INFO - Health check respondido com sucesso.
+2025-05-07 22:12:33,359 - INFO - Requisição recebida: /
+2025-05-07 22:12:33,360 - INFO - Acesso autorizado de ('127.0.0.1', 54636)
+2025-05-07 22:12:33,360 - INFO - Resposta enviada para ('127.0.0.1', 54636)
+2025-05-07 22:12:41,611 - INFO - Requisição recebida: /health
+2025-05-07 22:12:41,611 - INFO - Health check respondido com sucesso.
+2025-05-07 22:12:51,623 - INFO - Requisição recebida: /health
+2025-05-07 22:12:51,623 - INFO - Health check respondido com sucesso.
+2025-05-07 22:13:01,635 - INFO - Requisição recebida: /health
+2025-05-07 22:13:01,636 - INFO - Health check respondido com sucesso.
+2025-05-07 22:13:11,649 - INFO - Requisição recebida: /health
+2025-05-07 22:13:11,650 - INFO - Health check respondido com sucesso.
+2025-05-07 22:13:21,662 - INFO - Requisição recebida: /health
+2025-05-07 22:13:21,663 - INFO - Health check respondido com sucesso.
+2025-05-07 22:13:31,677 - INFO - Requisição recebida: /health
+2025-05-07 22:13:31,678 - INFO - Health check respondido com sucesso.

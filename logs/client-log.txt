@@ -2,3 +2,57 @@ INFO:root:Endereço do servidor: https://localhost:4443
 INFO:root:Resposta do servidor: Servidor seguro diz: Olá cliente!
 INFO:root:Endereço do servidor: https://127.0.0.1:4443
 INFO:root:Resposta do servidor: Servidor seguro diz: Olá cliente!
+INFO:root:Endereço do servidor: https://127.0.0.1:4443
+INFO:root:Resposta do servidor: Servidor seguro diz: Olá cliente!
+2025-05-07 22:12:33,291 - INFO - Consultando o Consul para obter o serviço.
+2025-05-07 22:12:33,304 - INFO - Resposta do Consul: [
+    {
+        "ID": "45d21b5c-7bcf-396e-7bbe-8de54e93cc4e",
+        "Node": "4d22592616cb",
+        "Address": "127.0.0.1",
+        "Datacenter": "dc1",
+        "TaggedAddresses": {
+            "lan": "127.0.0.1",
+            "lan_ipv4": "127.0.0.1",
+            "wan": "127.0.0.1",
+            "wan_ipv4": "127.0.0.1"
+        },
+        "NodeMeta": {
+            "consul-network-segment": ""
+        },
+        "ServiceKind": "",
+        "ServiceID": "secure-server-service",
+        "ServiceName": "secure-server",
+        "ServiceTags": [],
+        "ServiceAddress": "127.0.0.1",
+        "ServiceTaggedAddresses": {
+            "lan_ipv4": {
+                "Address": "127.0.0.1",
+                "Port": 4443
+            },
+            "wan_ipv4": {
+                "Address": "127.0.0.1",
+                "Port": 4443
+            }
+        },
+        "ServiceWeights": {
+            "Passing": 1,
+            "Warning": 1
+        },
+        "ServiceMeta": {},
+        "ServicePort": 4443,
+        "ServiceSocketPath": "",
+        "ServiceEnableTagOverride": false,
+        "ServiceProxy": {
+            "Mode": "",
+            "MeshGateway": {},
+            "Expose": {}
+        },
+        "ServiceConnect": {},
+        "CreateIndex": 19,
+        "ModifyIndex": 19
+    }
+]
+2025-05-07 22:12:33,305 - INFO - Endereço do servidor encontrado: https://127.0.0.1:4443
+2025-05-07 22:12:33,305 - INFO - Enviando requisição para o servidor: https://127.0.0.1:4443
+2025-05-07 22:12:33,364 - INFO - Resposta do servidor: Servidor seguro diz: Olá cliente!
